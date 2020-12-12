@@ -10,7 +10,7 @@ void gotoxy(int x,int y)
 
 void LimpiarPantalla()
 {
-	printf("\n\n\t\t\t");
+	printf("\n\n\t\t");
 	system("pause");
 	system("cls");
 }
