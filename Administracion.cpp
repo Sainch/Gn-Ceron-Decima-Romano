@@ -13,8 +13,11 @@ void Inicio_de_Sesion();
 int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
 void Registrar_Usuario_Asistente(FILE *);
+
 int Verificar_Usuario_Valido(char Usuario[11]);
+void Condiciones_Contrasena(int &y);
 int Verificar_Contrasena_Valida(char Contrasena[33]);
+void Condiciones_Usuario(int &y);
 
 //******************************************************************************
 
@@ -241,9 +244,15 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	printf("======================");
 	gotoxy(15,y);
 	y++;
-	printf("Ingrese el nombre de usuario:");
+	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
 	_flushall();
 	gets(Aux1.Usuario);
+	if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
+	{
+		Condiciones_Usuario(y);
+		printf("Ingrese el nombre de usuario:");
+		gets(Aux1.Usuario);
+	}
 	
 	//Verificar Usuario Válido***************************************
 	do
@@ -295,8 +304,14 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	gets(Aux1.ApellidoNombre);
 	gotoxy(15,y);
 	y++;
-	printf("Ingrese la contraseña:");
+	printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 	gets(Aux1.Contrasena);
+	if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
+	{
+		Condiciones_Contrasena(y);
+		printf("Ingrese la contraseña:");
+		gets(Aux1.Contrasena);
+	}
 	
 	//Verificar Contraseña válida**************************************
 	
@@ -361,24 +376,36 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	printf("====================");
 	gotoxy(15,y);
 	y++;
-	printf("Ingrese el nombre de usuario:");
+	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
 	_flushall();
 	gets(Aux1.Usuario);
+	if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
+	{
+		Condiciones_Usuario(y);
+		printf("Ingrese el nombre de usuario:");
+		gets(Aux1.Usuario);
+	}
 	
-	//Verificar Usuario Válido***************************************
+	//Verificar Usuario Válido**************************************************
+		
 	do
 	{
-		bandera3=0;
-		bandera3=Verificar_Usuario_Valido(Aux1.Usuario);
-	}while(bandera3==1);
-	
-	//Comparación****************************************************
-	
-	if(bandera1==0)//si no hay asistentes no compara
-	{
-		do
+		bandera2=0;
+		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
+		if(bandera2==1)
 		{
-			bandera2=0;
+			gotoxy(15,y);
+			y++;
+			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
+			gotoxy(15,y);
+			y++;
+			printf("Ingrese el nombre de usuario:");
+			gets(Aux1.Usuario);
+		}
+		
+		//Comparación***********************************************************************
+		if(bandera1==0 && bandera2==0)//si no hay veterinarios no compara, si se ingreso un usuario invalido no compara
+		{
 			rewind(Usuario_Asistente);
 			fread(&Aux2,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 			while(!feof(Usuario_Asistente) && bandera2==0)
@@ -399,8 +426,8 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 				printf("Ingrese el nombre de usuario:");
 				gets(Aux1.Usuario);
 			}
-		}while(bandera2==1);
-	}
+		}
+	}while(bandera2==1);
 	
 	//**************************************************************
 	
@@ -412,6 +439,21 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	y++;
 	printf("Ingrese la contraseña:");
 	gets(Aux1.Contrasena);
+	do
+	{
+		bandera1=0;
+		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
+		if(bandera1==1)
+		{
+			gotoxy(15,y);
+			y++;
+			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
+			gotoxy(15,y);
+			y++;
+			printf("Ingrese la contraseña:");
+			gets(Aux1.Contrasena);
+		}
+	}while(bandera1==1);
 	
 	fwrite(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 	fclose(Usuario_Asistente);
@@ -497,4 +539,64 @@ int Verificar_Contrasena_Valida(char Contrasena[33])
 	}
 	
 	return bandera;
+}
+
+void Condiciones_Usuario(int &y)
+{
+	gotoxy(25,y);
+	y++;
+	printf("=================================");
+	gotoxy(25,y);
+	y++;
+	printf("CONDICIONES DEL NOMBRE DE USUARIO");
+	gotoxy(25,y);
+	y++;
+	printf("=================================");
+	gotoxy(25,y);
+	y++;
+	printf("1.-Tener entre 6 y 10 caracteres.");
+	gotoxy(25,y);
+	y++;
+	printf("2.-Ser único.");
+	gotoxy(25,y);
+	y++;
+	printf("3.-Comenzar con una letra minúscula.");
+	gotoxy(25,y);
+	y++;
+	printf("4.-Tener al menos 2 letras mayúsculas.");
+	gotoxy(25,y);
+	y++;y++;
+	printf("5.-Máximo de 3 dígitos.");
+	gotoxy(15,y);
+	y++;y++;
+}
+
+void Condiciones_Contrasena(int &y)
+{
+	gotoxy(25,y);
+	y++;
+	printf("============================");
+	gotoxy(25,y);
+	y++;
+	printf("CONDICIONES DE LA CONTRASENA");
+	gotoxy(25,y);
+	y++;
+	printf("============================");
+	gotoxy(25,y);
+	y++;
+	printf("1.-Tener entre 6 y 32 caracteres.");
+	gotoxy(25,y);
+	y++;
+	printf("2.-Sólo puede contener cacracteres alfanuméricos.");
+	gotoxy(25,y);
+	y++;
+	printf("3.-Debe tener una letra mayúscula, una letra minúscula y un dígito.");
+	gotoxy(25,y);
+	y++;
+	printf("4.-NO debe tener más de tres caracteres númericos consecutivos.");
+	gotoxy(25,y);
+	y++;y++;
+	printf("5.-NO debe tener dos caracteres alfabéticos consecutivos.");
+	gotoxy(15,y);
+	y++;y++;
 }
