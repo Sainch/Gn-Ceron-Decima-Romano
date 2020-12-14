@@ -10,7 +10,17 @@ void gotoxy(int x,int y)
 
 void LimpiarPantalla()
 {
-	printf("\n\n\t\t");
-	system("pause");
+	//printf("\n\n\t\t");
+	system("pause>0");
 	system("cls");
 }
+
+typedef char palabra[50];
+
+struct Datos_Veterianrios
+{
+	char ApellidoNombre[60];
+	int DNI;
+	int matricula;
+	char telefono[25];
+};
