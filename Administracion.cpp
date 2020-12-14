@@ -11,6 +11,7 @@
 void Inicio_de_Sesion();
 int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
+void Registrar_Usuario_Asistente(FILE *);
 int Verificar_Usuario_Valido(char Usuario[10]);
 
 //******************************************************************************
@@ -26,7 +27,7 @@ main()
 	int bandera=1;
 	char Opcion;
 	Datos_Veterianrios DatosVet[50];
-	FILE *Veterinarios;
+	FILE *Veterinarios,*Usuario_Asistente;
 	
 	//**********************************************
 	
@@ -43,6 +44,8 @@ main()
 				Registrar_Veterinario(Veterinarios);
 				break;
 			case'b':case'B':
+				LimpiarPantalla();
+				Registrar_Usuario_Asistente(Usuario_Asistente);
 				break;
 			case'c':case'C':
 				break;
@@ -195,7 +198,7 @@ int MenuPrincipal_Administracion()
 	gotoxy(25,4);
 	printf("a._Registrar Veterinario");
 	gotoxy(25,5);
-	printf("b._Registrar Asistente");
+	printf("b._Registrar Usuario Asistente");
 	gotoxy(25,6);
 	printf("c._Atenciones por Veterinarios");
 	gotoxy(25,7);
@@ -211,10 +214,9 @@ int MenuPrincipal_Administracion()
 	return OP;
 }
 
-
 void Registrar_Veterinario(FILE *Veterinarios)
 {
-	int x=25,y=1;
+	int y=1;
 	int bandera1=0,bandera2,bandera3;
 	Datos_Veterianrios Aux1,Aux2;
 	
@@ -302,6 +304,87 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	fwrite(&Aux1,sizeof(Datos_Veterianrios),1,Veterinarios);
 	
 	fclose(Veterinarios);
+}
+
+void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
+{
+	int y=1;
+	int bandera1=0,bandera2,bandera3;
+	Datos_Usuarios_Asistentes Aux1,Aux2;
+	
+	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","rb");
+	if(Usuario_Asistente==NULL)
+	{
+		bandera1=1;//significa que no hay asistentes registrados
+	}
+	fclose(Usuario_Asistente);
+	
+	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","a+b");
+	gotoxy(25,y);
+	y++;
+	printf("====================");
+	gotoxy(25,y);
+	y++;
+	printf("INGRESO DE ASISTENTE");
+	gotoxy(25,y);
+	y++;
+	printf("====================");
+	gotoxy(15,y);
+	y++;
+	printf("Ingrese el nombre de usuario:");
+	_flushall();
+	gets(Aux1.Usuario);
+	
+	//Verificar Usuario Válido***************************************
+	do
+	{
+		bandera3=0;
+		bandera3=Verificar_Usuario_Valido(Aux1.Usuario);
+	}while(bandera3==1);
+	
+	//Comparación****************************************************
+	
+	if(bandera1==0)//si no hay asistentes no compara
+	{
+		do
+		{
+			bandera2=0;
+			rewind(Usuario_Asistente);
+			fread(&Aux2,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+			while(!feof(Usuario_Asistente) && bandera2==0)
+			{
+				if(strcmp(Aux2.Usuario,Aux1.Usuario)==0)//Usuario existente
+				{
+					bandera2=1;
+				}
+				fread(&Aux2,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+			}
+			if(bandera2==1)
+			{
+				gotoxy(15,y);
+				y++;
+				printf("USUARIO EXISTENTE! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
+				gotoxy(15,y);
+				y++;
+				printf("Ingrese el nombre de usuario:");
+				gets(Aux1.Usuario);
+			}
+		}while(bandera2==1);
+	}
+	
+	//**************************************************************
+	
+	gotoxy(15,y);
+	y++;
+	printf("Ingrese el Apellido y Nombre:");
+	gets(Aux1.ApellidoNombre);
+	gotoxy(15,y);
+	y++;
+	printf("Ingrese la contraseña:");
+	gets(Aux1.Contrasena);
+	
+	fwrite(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+	fclose(Usuario_Asistente);
 }
 
 int Verificar_Usuario_Valido(char Usuario[10])
