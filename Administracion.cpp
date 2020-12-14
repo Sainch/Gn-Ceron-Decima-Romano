@@ -13,6 +13,7 @@ void Inicio_de_Sesion();
 int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
 void Registrar_Usuario_Asistente(FILE *);
+void Listar_Asistentes(FILE *Usuario_Asistente);
 
 int Verificar_Usuario_Valido(char Usuario[11]);
 void Condiciones_Contrasena(int &y);
@@ -57,6 +58,8 @@ main()
 			case'd':case'D':
 				break;
 			case'e':case'E':
+				LimpiarPantalla();
+				Listar_Asistentes(Usuario_Asistente);
 				break;
 			case'f':case'F':
 				bandera=0;
@@ -458,6 +461,41 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	fwrite(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 	fclose(Usuario_Asistente);
 }
+
+void Listar_Asistentes(FILE *Usuario_Asistente)
+{
+	Datos_Usuarios_Asistentes Aux1;
+	int y=1;
+	
+	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","rb");
+	if(Usuario_Asistente!=NULL)
+	{
+		gotoxy(25,y);
+		y++;
+		printf("=====================");
+		gotoxy(25,y);
+		y++;
+		printf("LISTADO DE ASISTENTES");
+		gotoxy(25,y);
+		y++;y++;
+		printf("=====================");
+		fread(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+		while(!feof(Usuario_Asistente))
+		{
+			gotoxy(15,y);y++;
+			printf("Nombre:%s",Aux1.ApellidoNombre);
+			gotoxy(15,y);y++;
+			printf("Usuario:%s",Aux1.Usuario);
+			gotoxy(15,y);y++;y++;
+			printf("Contraseña:%s",Aux1.Contrasena);
+			fread(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+		}
+	}
+	fclose(Usuario_Asistente);
+}
+
+
+//*****************************OTRAS FUNCIONES AUXILIARES***********************
 
 int Verificar_Usuario_Valido(char Usuario[11])
 {
