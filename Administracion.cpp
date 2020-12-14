@@ -3,6 +3,7 @@
 #include<locale.h>
 #include<string.h>
 #include<windows.h>
+#include<iostream>
 #include"funciones_y_estructuras.h"
 
 
@@ -12,7 +13,8 @@ void Inicio_de_Sesion();
 int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
 void Registrar_Usuario_Asistente(FILE *);
-int Verificar_Usuario_Valido(char Usuario[10]);
+int Verificar_Usuario_Valido(char Usuario[11]);
+int Verificar_Contrasena_Valida(char Contrasena[33]);
 
 //******************************************************************************
 
@@ -246,16 +248,22 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	//Verificar Usuario Válido***************************************
 	do
 	{
-		bandera3=0;
-		bandera3=Verificar_Usuario_Valido(Aux1.Usuario);
-	}while(bandera3==1);
-	
-	//Comparación****************************************************
-	if(bandera1==0)//si no hay veterinarios no compara
-	{
-		do
+		bandera2=0;
+		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
+		if(bandera2==1)
 		{
-			bandera2=0;
+			gotoxy(15,y);
+			y++;
+			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
+			gotoxy(15,y);
+			y++;
+			printf("Ingrese el nombre de usuario:");
+			gets(Aux1.Usuario);
+		}
+		
+		//Comparación***********************************************************************
+		if(bandera1==0 && bandera2==0)//si no hay veterinarios no compara, si se ingreso un usuario invalido no compara
+		{
 			rewind(Veterinarios);
 			fread(&Aux2,sizeof(Datos_Veterianrios),1,Veterinarios);
 			while(!feof(Veterinarios) && bandera2==0)
@@ -276,8 +284,9 @@ void Registrar_Veterinario(FILE *Veterinarios)
 				printf("Ingrese el nombre de usuario:");
 				gets(Aux1.Usuario);
 			}
-		}while(bandera2==1);
-	}
+		}
+	}while(bandera2==1);
+	
 	//**************************************************************
 	
 	gotoxy(15,y);
@@ -288,6 +297,27 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	y++;
 	printf("Ingrese la contraseña:");
 	gets(Aux1.Contrasena);
+	
+	//Verificar Contraseña válida**************************************
+	
+	do
+	{
+		bandera1=0;
+		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
+		if(bandera1==1)
+		{
+			gotoxy(15,y);
+			y++;
+			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
+			gotoxy(15,y);
+			y++;
+			printf("Ingrese la contraseña:");
+			gets(Aux1.Contrasena);
+		}
+	}while(bandera1==1);
+	
+	//*****************************************************************
+	
 	gotoxy(15,y);
 	y++;
 	printf("Ingrese la matrícula:");
@@ -387,7 +417,84 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	fclose(Usuario_Asistente);
 }
 
-int Verificar_Usuario_Valido(char Usuario[10])
+int Verificar_Usuario_Valido(char Usuario[11])
 {
+	int bandera=0,i,ContMayus=0,ContDigit=0;
 	
+	if(strlen(Usuario)<6 || strlen(Usuario)>10)//entre 6 y 10 caracteres
+		bandera=1;
+	if((Usuario[0]<'a' || Usuario[0]>'z') && bandera==0)//primera letra minúscula
+		bandera=1;
+	if(bandera==0)
+	{
+		for(i=0;i<strlen(Usuario);i++)
+		{
+			if(isupper(Usuario[i]))
+				ContMayus++;
+			if(isdigit(Usuario[i]))
+				ContDigit++;
+		}
+		if(ContMayus<2)
+			bandera=1;
+		if(ContDigit>3)
+			bandera=1;
+	}
+	return bandera;
+}
+
+int Verificar_Contrasena_Valida(char Contrasena[33])
+{
+	int bandera=0,i,ValorAscci1,ValorAscci2,ValorAscci3;
+	int bandMinus=0,bandMayus=0,bandDigit=0;
+	char Aux[33];
+	
+	if(strlen(Contrasena)<6 || strlen(Contrasena)>32)//entre 6 y 32 caracteres
+		bandera=1;
+	if(bandera==0)
+	{
+		//Comprobar si hay al menos 1 caracter en minuscula, 1 mayuscula y 1 digito
+		for(i=0;i<strlen(Contrasena) && bandera==0;i++)
+		{
+			if(isalnum(Contrasena[i]))
+			{
+				if(islower(Contrasena[i]) && bandMinus==0)
+					bandMinus=1;
+				if(isupper(Contrasena[i]) && bandMayus==0)
+					bandMayus=1;
+				if(isdigit(Contrasena[i]) && bandDigit==0)
+					bandDigit=1;
+			}
+			else//Algun caracter no es alfabético o númerico
+				bandera=1;
+		}
+		
+		if((bandMinus==0 || bandMayus==0 || bandDigit==0) && bandera==0)//hay al menos un caracteres en mayuscula, minuscula o dígito
+			bandera=1;
+	}
+	
+	if(bandera==0)
+	{
+		strcpy(Aux,Contrasena);
+		strlwr(Aux);//Como puede haber caracteres en minusculas y mayúsculas sucesivos, pasamos todos a minúsculas en un Auxiliar
+		for(i=0;i<(strlen(Contrasena)-1) && bandera==0;i++)//Verificar 3 numeros sucesivos o 
+		{
+			ValorAscci1=Aux[i];
+			ValorAscci2=Aux[i+1];
+			if((ValorAscci1+1)==ValorAscci2)
+			{
+				if(isdigit(Contrasena[i]) && i<(strlen(Contrasena)-2))//son digitos, y deben ser 3 sucesivos
+				{
+					ValorAscci3=Aux[i+2];
+					if((ValorAscci2+1)==ValorAscci3)
+						bandera=1;
+				}
+				else//Como solo hay digitos y alfabéticos no es necesario saber si es alfabético
+				{
+					bandera=1;
+				}
+			}
+		}
+	}
+	
+	return bandera;
 }

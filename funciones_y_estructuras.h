@@ -19,12 +19,12 @@ typedef char palabra[50];
 
 struct Datos_Veterianrios
 {
-	char ApellidoNombre[60],Usuario[10],Contrasena[32],telefono[25];
+	char ApellidoNombre[60],Usuario[11],Contrasena[33],telefono[25];
 	int DNI,matricula;
 };
 
 struct Datos_Usuarios_Asistentes
 {
-	char Usuario[10],Contrasena[32],ApellidoNombre[60];
+	char Usuario[11],Contrasena[32],ApellidoNombre[60];
 };
 
