@@ -19,8 +19,9 @@ typedef char palabra[50];
 
 struct Datos_Veterianrios
 {
-	char ApellidoNombre[60];
+	char ApellidoNombre[60],Usuario[10],Contrasena[32];
 	int DNI;
 	int matricula;
 	char telefono[25];
 };
+
