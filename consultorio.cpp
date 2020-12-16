@@ -4,11 +4,38 @@
 #include<windows.h>
 #include"funciones_y_estructuras.h"
 
+struct Fecha
+{
+	int dia;
+	int mes;
+	int anio;
+};
+
+struct Turno
+{
+	int MatriculaVeterinario;
+	Fecha fecha;
+	int DNI_Duenio;
+	char DetalleAtencion[380];
+};
+
+struct Mascota
+{
+	char ApellidoyNombre[60];
+	char Domicilio[60];
+	int DNI_Dueno;
+	char Localidad[60];
+	Fecha FechadeNacimiento;
+	float Peso;
+	char Telefono[25];
+};
+
 
 //**********************************FUNCIONES***********************************
 
-void Iniciar_Sesion();
+void Iniciar_Sesion(Datos_Veterinarios &VeterinarioIngresado);
 int MenuPrincipalConsultorio();
+void Visualizar_Lista_Espera(Datos_Veterinarios VeterinarioIngresado);
 
 //******************************************************************************
 
@@ -20,8 +47,9 @@ main()
 	
 	int bandera=1;
 	char Opcion;
+	Datos_Veterinarios VeterinarioIngresado;
 	
-	Iniciar_Sesion();
+	Iniciar_Sesion(VeterinarioIngresado);
 	LimpiarPantalla();	
 	do
 	{
@@ -29,6 +57,8 @@ main()
 		switch(Opcion)
 		{
 			case'a':case'A':
+				LimpiarPantalla();
+				Visualizar_Lista_Espera(VeterinarioIngresado);
 				break;
 			case'b':case'B':
 				break;
@@ -48,7 +78,7 @@ main()
 				gotoxy(25,15);
 				printf("ERROR!!");
 				gotoxy(25,16);
-				printf("NO SE INGRESÓ UN OPCIÓN VÁLIDA");
+				printf("SE INGREÓ UNA OPCIÓN INVÁLIDA");
 				break;
 		}
 		
@@ -57,7 +87,7 @@ main()
 	}while(bandera==1);
 }
 
-void Iniciar_Sesion()
+void Iniciar_Sesion(Datos_Veterinarios &VeterinarioIngresado)
 {
 	FILE *Veterinarios;
 	Datos_Veterinarios Aux;
@@ -157,6 +187,7 @@ void Iniciar_Sesion()
 		printf("BIENVENIDO %s!!",Aux.ApellidoNombre);
 		gotoxy(35,y);y++;
 		printf("========================================");
+		VeterinarioIngresado=Aux;//Guardar datos de veterinario que está en el sistema
 	}
 	fclose(Veterinarios);
 }
@@ -182,4 +213,69 @@ int MenuPrincipalConsultorio()
 	_flushall();
 	scanf("%c",&OP);
 	return OP;
+}
+
+void Visualizar_Lista_Espera(Datos_Veterinarios VeterinarioIngresado)
+{
+	Turno Aux1;
+	Mascota Aux2;
+	Datos_Veterinarios Aux3;
+	
+	Fecha Hoy;
+	Hoy.anio=2020;//Cambiar al año
+	int y=1,ContTurn=0,bandera1,bandera2=0,i=0;
+	
+	FILE *ArchTurnos,*ArchMascotas;
+	ArchTurnos=fopen("Turnos.dat","rb");
+	ArchMascotas=fopen("Mascotas.dat","rb");
+	
+	gotoxy(15,y);y++;
+	printf("Ingrese la fecha actual.");
+	gotoxy(15,y);y++;
+	printf("Mes:");
+	scanf("%d",&Hoy.mes);
+	gotoxy(15,y);y++;
+	printf("Dia:");
+	scanf("%d",&Hoy.dia);
+	
+	LimpiarPantalla();
+	y=1;gotoxy(35,y);y++;
+	printf("=================");
+	gotoxy(35,y);y++;
+	printf("LISTADO DE TURNOS");
+	gotoxy(35,y);y++;y++;
+	printf("=================");
+	
+	rewind(ArchTurnos);
+	fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	while(!feof(ArchTurnos))
+	{
+		if(Aux1.fecha.mes==Hoy.mes && Aux1.fecha.dia==Hoy.dia && VeterinarioIngresado.matricula==Aux1.MatriculaVeterinario)//dia y veterinario correspondiente
+		{
+			bandera2=1;//hay algun para el día?
+			bandera1=0;
+			fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
+			while(!feof(ArchMascotas) && bandera1==0)
+			{
+				if(Aux1.DNI_Duenio==Aux2.DNI_Dueno)
+					bandera1=1;
+				if(bandera1==0)
+					fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
+			}
+			gotoxy(15,y);y++;y++;
+			printf("%d°:%s",i+1,Aux2.ApellidoyNombre);
+			i++;
+		}
+		fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	}
+	if(bandera2==0)
+	{
+		gotoxy(35,y);y++;
+		printf("NO TIENE TURNOS PARA EL DÍA");
+		gotoxy(35,y);y++;
+		printf("===========================");
+	}
+	
+	fclose(ArchTurnos);
+	fclose(ArchMascotas);
 }
