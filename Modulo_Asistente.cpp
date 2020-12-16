@@ -1,14 +1,3 @@
-/*MODULO ASISTENTE
-
-3. Identificación de asistente (Usuario y Contraseña) Recibe Usuarios.dat
-4. Registra mascota (Apellido y Nombre, Domicilio, DNI del dueño, Localidad, Fecha de Nacimiento, 
-   Edad, Peso, Teléfono) Crea Mascotas.dat
-5. Registra turno (Fecha, dd/mm/aaaa) Crea Turnos.dat
-9. Obtiene informe de atenciones por veterinario y fecha.
-
-Cada vez que un usuario cree un registro de mascota el mismo se guardará dentro del archivo Mascotas.dat y 
-los turnos correspondientes dentro del archivo Turnos.dat.*/
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<locale.h>
@@ -39,17 +28,21 @@ struct Turno
 	char DetalleAtencion[380];
 };
 
+void Inicio_de_Sesion();
 int MenuPrincipalAsistente();
-void registrarMascotas(FILE *Mascotas);
+void registrarMascotas(FILE *Mascotas); //Se crea el archivo Mascotas.dat
 void mensaje(char const *cadena);
-void registrarTurnos(FILE *Turnos);
+void registrarTurnos(FILE *Turnos); //Se crea el archivo Turnos.dat
 
 main()
 {
 	setlocale(LC_CTYPE,"spanish");
-	system("color 2");
+	system("color 4");
 	
 	int bandera=0;
+	
+	Inicio_de_Sesion(); //Inicio del módulo de asistente
+	LimpiarPantalla();
 	
 	FILE *ArchMascotas; //Se abre de lectura para conservar
 	ArchMascotas = fopen("Mascotas.dat","w+b"); //los anteriores registros.
@@ -67,9 +60,6 @@ main()
 		switch(Opcion)
 		{
 			case 1:
-				
-				break;
-			case 2:
 				LimpiarPantalla();
 				registrarMascotas(ArchMascotas);
 				break;
@@ -91,6 +81,54 @@ main()
 		}
 	}while(bandera == 0);
 }
+void Inicio_de_Sesion()
+{
+	char usuario[11],contrasena[32];
+	int bandera;
+	Datos_Usuarios_Asistentes reg;
+	
+	FILE *Usuario_Asistente;
+	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","rb");
+	
+	printf("Usuario: "); gets(usuario);
+	printf("Contraseña: "); gets(contrasena);
+	
+	do
+	{
+		bandera=0;
+		rewind(Usuario_Asistente);
+		fread(&reg,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+		
+		while(!feof(Usuario_Asistente) && bandera==0) //compara con usuario del archivo
+		{
+			if (strcmp(usuario,reg.Usuario)==0)
+			{
+				bandera=1; //si lo encuentra sale
+			}
+			if (bandera==0)
+			{
+				fread(&reg,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
+			}
+		}
+		if (bandera==1) //si ingresa bien el usuario
+		{
+			if (strcmp(contrasena,reg.Contrasena)!=0) //si ingresa mal la contraseña
+			{
+				bandera=0;
+			}
+		}
+		if (bandera==0)
+		{
+			printf("Usuario y contraseña incorrectos");
+			printf("%s",reg.Usuario);
+			printf("%s",reg.Contrasena);
+			LimpiarPantalla();
+			Inicio_de_Sesion();
+		}
+	}while(bandera==0); //sale si se ingresa usuario y contraeña correctos
+	
+	fclose(Usuario_Asistente);
+}
 int MenuPrincipalAsistente()
 {
 	int Opcion;
@@ -100,16 +138,14 @@ int MenuPrincipalAsistente()
 	gotoxy(45,3);
 	printf("========================="); 
 	gotoxy(45,4);
-	printf("1.- Iniciar Sesión");
+	printf("1.- Registrar Mascota");
 	gotoxy(45,5);
-	printf("2.- Registrar Mascota");
+	printf("2.- Registrar Turno");
 	gotoxy(45,6);
-	printf("3.- Registrar Turno");
-	gotoxy(45,7);
-	printf("4.- Listado de Atenciones por Veterinario y Fecha");
-	gotoxy(45,9);
-	printf("5.- Cerrar la aplicación");
-	gotoxy(45,11);
+	printf("3.- Listado de Atenciones por Veterinario y Fecha");
+	gotoxy(45,8);
+	printf("4.- Cerrar la aplicación");
+	gotoxy(45,10);
 	printf("Ingrese una opción: ");
 	_flushall();
 	scanf("%d",&Opcion);
