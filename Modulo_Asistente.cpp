@@ -44,24 +44,28 @@ main()
 	LimpiarPantalla();
 	
 	FILE *ArchMascotas; //Se abre de lectura para conservar
-	ArchMascotas = fopen("Mascotas.dat","w+b"); //los anteriores registros.
-	
+	ArchMascotas = fopen("Mascotas.dat","rb"); //los anteriores registros.
+	fclose(ArchMascotas);
 	if(ArchMascotas == NULL) // Evalua, Si hubo error, muestra mensaje y termina.
 	{
 		system("CLS");
 		printf("Ocurrio un error en la apertura del Archivo....");
-		exit(1);
+		ArchMascotas = fopen("Mascotas.dat","w+b");
+		//exit(1);
 	}
+	ArchMascotas = fopen("Mascotas.dat","a+b");
 	
 	FILE *ArchTurnos; //Se abre de lectura para conservar
-	ArchTurnos = fopen("Turnos.dat","w+b"); //los anteriores registros.
-	
+	ArchTurnos = fopen("Turnos.dat","rb"); //los anteriores registros.
+	fclose(ArchTurnos);
 	if(ArchTurnos == NULL) // Evalua, Si hubo error, muestra mensaje y termina.
 	{
 		system("CLS");
 		printf("Ocurrio un error en la apertura del Archivo....");
-		exit(1);
+		ArchTurnos = fopen("Turnos.dat","w+b");
+		//exit(1);
 	}
+	ArchTurnos = fopen("Turnos.dat","a+b");
 	
 	int Opcion = MenuPrincipalAsistente(); //Llama la función que muestra el menú.
 
@@ -82,21 +86,25 @@ main()
 				Opcion = MenuPrincipalAsistente();
 				break;
 			case 3:
-				
+				Opcion = MenuPrincipalAsistente();
 				break;
 			case 4:
 				LimpiarPantalla();
 				listarMascotas(ArchMascotas);
 				LimpiarPantalla();
 				Opcion = MenuPrincipalAsistente();
+				break;
 			case 5:
 				LimpiarPantalla();
 				printf("Fin del Programa");
+				fclose(ArchMascotas);
+				fclose(ArchTurnos);
 				break;
 			default:
 				printf("Ha ingresado una opcion no valida");
 				LimpiarPantalla();
 				Opcion = MenuPrincipalAsistente();
+				break;
 		}
 	}while(Opcion != 5);
 }
@@ -146,6 +154,7 @@ void Inicio_de_Sesion()
 	
 	fclose(Usuario_Asistente);
 }
+
 int MenuPrincipalAsistente()
 {
 	int Opcion;
@@ -229,13 +238,13 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 	
 	Turno regi;
 	FILE *ArchTurnos;
-	ArchTurnos=fopen("Turnos.dat","rb");
+	ArchTurnos=fopen("Turnos.dat","a+b");
 	
 	Mascota reg;
 	FILE *ArchMascotas;
-	ArchMascotas=fopen("Mascotas.dat","rb");
+	ArchMascotas=fopen("Mascotas.dat","a+b");
 	
-	Datos_Veterianrios vet;
+	Datos_Veterinarios vet;
 	FILE *Veterinarios;
 	Veterinarios=fopen("Veterinarios.dat","rb");
 	
@@ -269,7 +278,7 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 			printf("\t*********************************************************\n\n");
 			printf("\tApellido y Nombre \t Matricula **\n\n");
 			rewind(Veterinarios); //Ubica el puntero en el primer registro del archivo.
-			fread(&vet, sizeof(Datos_Veterianrios), 1, Veterinarios); //Leer el primer registro.
+			fread(&vet, sizeof(Datos_Veterinarios), 1, Veterinarios); //Leer el primer registro.
 			
 			if (feof(Veterinarios))
 			{
@@ -282,7 +291,7 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 					printf("\t %s ", vet.ApellidoNombre);
 					printf("\t %d ", vet.matricula);
 					printf("\n");
-					fread(&vet, sizeof(Datos_Veterianrios), 1, Veterinarios); //Continua leyendo.
+					fread(&vet, sizeof(Datos_Veterinarios), 1, Veterinarios); //Continua leyendo.
 				}
 			}
 			printf("Ingrese una matricula: ");//ELEGIR UN VETERINARIO
@@ -295,7 +304,7 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 			scanf("%d",&regi.fecha.mes);
 			printf("\n\t Anio: ");
 			scanf("%d",&regi.fecha.anio);
-			fwrite(&regi, sizeof(Turno), 1, ArchTurnos); //Graba el registro lógico.
+			fwrite(&regi,sizeof(Turno),1,ArchTurnos); //Graba el registro lógico.
 			_flushall();
 			printf("\n\nContinuar Registrando Turnos (S/N): ");
 			scanf("%c", &continua);
@@ -308,14 +317,17 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 		{
 			printf("El DNI ingresado no existe");
 			LimpiarPantalla();
-			registrarTurnos(ArchTurnos,ArchMascotas);
+			printf("\n\n\t Ingrese Nro de DNI del dueño: ");
+			scanf("%d", &regi.DNI_Duenio);
+			//registrarTurnos(ArchTurnos,ArchMascotas);
 		}
 	}while(bandera==0); //sale si se ingresa dni correcto
 	
-	fclose(Turnos);
-	fclose(Mascotas);
+	//fclose(Turnos);
+	//fclose(Mascotas);
 	fclose(Veterinarios);
 }
+
 void listarMascotas(FILE *Mascotas)
 {
 	Mascota reg; //Registro logico.
