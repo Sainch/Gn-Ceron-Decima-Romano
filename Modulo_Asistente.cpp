@@ -30,16 +30,15 @@ struct Turno
 
 void Inicio_de_Sesion();
 int MenuPrincipalAsistente();
-void registrarMascotas(FILE *Mascotas); //Se crea el archivo Mascotas.dat
+void registrarMascotas(FILE *Mascotas);
 void mensaje(char const *cadena);
-void registrarTurnos(FILE *Turnos); //Se crea el archivo Turnos.dat
+void registrarTurnos(FILE *Turnos,FILE *Mascotas);
+void listarMascotas(FILE *Mascotas);
 
 main()
 {
 	setlocale(LC_CTYPE,"spanish");
 	system("color 4");
-	
-	int bandera=0;
 	
 	Inicio_de_Sesion(); //Inicio del módulo de asistente
 	LimpiarPantalla();
@@ -53,33 +52,53 @@ main()
 		printf("Ocurrio un error en la apertura del Archivo....");
 		exit(1);
 	}
+	
+	FILE *ArchTurnos; //Se abre de lectura para conservar
+	ArchTurnos = fopen("Turnos.dat","w+b"); //los anteriores registros.
+	
+	if(ArchTurnos == NULL) // Evalua, Si hubo error, muestra mensaje y termina.
+	{
+		system("CLS");
+		printf("Ocurrio un error en la apertura del Archivo....");
+		exit(1);
+	}
+	
+	int Opcion = MenuPrincipalAsistente(); //Llama la función que muestra el menú.
 
 	do
 	{
-		int Opcion = MenuPrincipalAsistente(); //Llama la función que muestra el menú.
 		switch(Opcion)
 		{
 			case 1:
 				LimpiarPantalla();
 				registrarMascotas(ArchMascotas);
+				LimpiarPantalla();
+				Opcion = MenuPrincipalAsistente();
+				break;
+			case 2:
+				LimpiarPantalla();
+				registrarTurnos(ArchTurnos,ArchMascotas);
+				LimpiarPantalla();
+				Opcion = MenuPrincipalAsistente();
 				break;
 			case 3:
 				
 				break;
 			case 4:
-				
-				break;
+				LimpiarPantalla();
+				listarMascotas(ArchMascotas);
+				LimpiarPantalla();
+				Opcion = MenuPrincipalAsistente();
 			case 5:
 				LimpiarPantalla();
-				fclose(ArchMascotas);
 				printf("Fin del Programa");
-				bandera=1;
 				break;
 			default:
-				LimpiarPantalla();
 				printf("Ha ingresado una opcion no valida");
+				LimpiarPantalla();
+				Opcion = MenuPrincipalAsistente();
 		}
-	}while(bandera == 0);
+	}while(Opcion != 5);
 }
 void Inicio_de_Sesion()
 {
@@ -120,8 +139,6 @@ void Inicio_de_Sesion()
 		if (bandera==0)
 		{
 			printf("Usuario y contraseña incorrectos");
-			printf("%s",reg.Usuario);
-			printf("%s",reg.Contrasena);
 			LimpiarPantalla();
 			Inicio_de_Sesion();
 		}
@@ -143,8 +160,10 @@ int MenuPrincipalAsistente()
 	printf("2.- Registrar Turno");
 	gotoxy(45,6);
 	printf("3.- Listado de Atenciones por Veterinario y Fecha");
+	gotoxy(45,7);
+	printf("4.- Mostrar mascotas registradas");
 	gotoxy(45,8);
-	printf("4.- Cerrar la aplicación");
+	printf("5.- Cerrar la aplicación");
 	gotoxy(45,10);
 	printf("Ingrese una opción: ");
 	_flushall();
@@ -202,3 +221,133 @@ void registrarMascotas(FILE *Mascotas)
 	mensaje("Fin de la carga");
 }
 
+void registrarTurnos(FILE *Turnos, FILE *Mascotas)
+{
+	int nroTur=0; //Variable contador del nro de turnos almacenados.
+	char continua='N';
+	int bandera;
+	
+	Turno regi;
+	FILE *ArchTurnos;
+	ArchTurnos=fopen("Turnos.dat","rb");
+	
+	Mascota reg;
+	FILE *ArchMascotas;
+	ArchMascotas=fopen("Mascotas.dat","rb");
+	
+	Datos_Veterianrios vet;
+	FILE *Veterinarios;
+	Veterinarios=fopen("Veterinarios.dat","rb");
+	
+	printf("\n\n\t Ingrese Nro de DNI del dueño: ");
+	scanf("%d", &regi.DNI_Duenio);
+	
+	do
+	{
+		bandera=0;
+		rewind(Mascotas);
+		fread(&reg,sizeof(Mascota),1,Mascotas);
+		
+		while(!feof(Mascotas) && bandera==0) //compara con usuario del archivo
+		{
+			if (regi.DNI_Duenio==reg.DNI_Dueno)
+			{
+				bandera=1; //si lo encuentra sale
+			}
+			if (bandera==0)
+			{
+				fread(&reg,sizeof(Mascota),1,Mascotas);
+			}
+		}
+		if (bandera==1) //si ingresa bien el dni, muestra la lista de veterinarios, y se pide asignar dia del turno
+		{
+			do{
+			printf("Asignar Turno a %s",reg.ApellidoyNombre);
+			
+			//MOSTRAR LISTA DE VETERINARIOS
+			printf("\tListado de Veterinarios\n");
+			printf("\t*********************************************************\n\n");
+			printf("\tApellido y Nombre \t Matricula **\n\n");
+			rewind(Veterinarios); //Ubica el puntero en el primer registro del archivo.
+			fread(&vet, sizeof(Datos_Veterianrios), 1, Veterinarios); //Leer el primer registro.
+			
+			if (feof(Veterinarios))
+			{
+				printf("El Archivo esta vacio\n No se Registro Informacion.");
+			}
+			else
+			{
+				while(!feof(Veterinarios)) //Repite hasta el último registro.
+				{
+					printf("\t %s ", vet.ApellidoNombre);
+					printf("\t %d ", vet.matricula);
+					printf("\n");
+					fread(&vet, sizeof(Datos_Veterianrios), 1, Veterinarios); //Continua leyendo.
+				}
+			}
+			printf("Ingrese una matricula: ");//ELEGIR UN VETERINARIO
+			scanf("%d", &regi.MatriculaVeterinario);
+			
+			printf("\n\t Ingrese Fecha del Turno: \n");
+			printf("\n\t Dia: ");
+			scanf("%d",&regi.fecha.dia);
+			printf("\n\t Mes: ");
+			scanf("%d",&regi.fecha.mes);
+			printf("\n\t Anio: ");
+			scanf("%d",&regi.fecha.anio);
+			fwrite(&regi, sizeof(Turno), 1, ArchTurnos); //Graba el registro lógico.
+			_flushall();
+			printf("\n\nContinuar Registrando Turnos (S/N): ");
+			scanf("%c", &continua);
+			
+			}while(continua == 'S' || continua == 's');
+			system("CLS");
+			mensaje("Fin de la carga");
+		}
+		if (bandera==0)
+		{
+			printf("El DNI ingresado no existe");
+			LimpiarPantalla();
+			registrarTurnos(ArchTurnos,ArchMascotas);
+		}
+	}while(bandera==0); //sale si se ingresa dni correcto
+	
+	fclose(Turnos);
+	fclose(Mascotas);
+	fclose(Veterinarios);
+}
+void listarMascotas(FILE *Mascotas)
+{
+	Mascota reg; //Registro logico.
+	/*----- Titulo del listado -----*/
+	system("CLS");
+	printf("\tL I S T A D O DE MASCOTAS\n");
+	printf("\t*********************************************************\n\n");
+	printf("\tApellido y Nombre \t Domicilio \t DNI del Dueño \t Localidad \t Fecha de Nacimiento \t Peso \t Telefono **\n\n");
+	printf("\t*********************************************************\n\n");
+	/*----- Listado de las Mascotas -----*/
+	rewind(Mascotas); //Ubica el puntero en el primer registro del archivo.
+	fread(&reg, sizeof(Mascota), 1, Mascotas); //Leer el primer registro.
+	
+	if (feof(Mascotas))
+	{
+		system("CLS");
+		printf("El Archivo esta vacio\n No se Registro Informacion.");
+	}
+	else
+	{
+		while(!feof(Mascotas)) //Repite hasta el último registro.
+		{
+			printf("\t %s ", reg.ApellidoyNombre);
+			printf("\t %s ", reg.Domicilio);
+			printf("\t %d ", reg.DNI_Dueno);
+			printf("\t %s ", reg.Localidad);
+			printf("\t %d/%d/%d ", reg.FechadeNacimiento.dia, reg.FechadeNacimiento.mes, reg.FechadeNacimiento.anio);
+			printf("\t %.2f ", reg.Peso);
+			printf("\t %s ", reg.Telefono);
+			printf("\n");
+			fread(&reg, sizeof(Mascota), 1, Mascotas); //Continua leyendo.
+		}
+	}
+	printf("F i n del L i s t a d o");
+}
