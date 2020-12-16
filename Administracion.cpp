@@ -15,6 +15,8 @@ void Registrar_Veterinario(FILE *Veterinarios);
 void Registrar_Usuario_Asistente(FILE *);
 void Listar_Asistentes(FILE *Usuario_Asistente);
 
+//**********************************AUXILIARES**********************************
+
 int Verificar_Usuario_Valido(char Usuario[11]);
 void Condiciones_Contrasena(int &y);
 int Verificar_Contrasena_Valida(char Contrasena[33]);
@@ -264,13 +266,20 @@ void Registrar_Veterinario(FILE *Veterinarios)
 		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
 		if(bandera2==1)
 		{
-			gotoxy(15,y);
+			gotoxy(25,y);
 			y++;
 			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
 			gotoxy(15,y);
 			y++;
-			printf("Ingrese el nombre de usuario:");
+			printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
+			_flushall();
 			gets(Aux1.Usuario);
+			if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
+			{
+				Condiciones_Usuario(y);
+				printf("Ingrese el nombre de usuario:");
+				gets(Aux1.Usuario);
+			}
 		}
 		
 		//Comparación***********************************************************************
@@ -288,7 +297,7 @@ void Registrar_Veterinario(FILE *Veterinarios)
 			}
 			if(bandera2==1)
 			{
-				gotoxy(15,y);
+				gotoxy(25,y);
 				y++;
 				printf("USUARIO EXISTENTE! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
 				gotoxy(15,y);
@@ -324,13 +333,19 @@ void Registrar_Veterinario(FILE *Veterinarios)
 		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
 		if(bandera1==1)
 		{
-			gotoxy(15,y);
+			gotoxy(25,y);
 			y++;
 			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
 			gotoxy(15,y);
 			y++;
-			printf("Ingrese la contraseña:");
+			printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 			gets(Aux1.Contrasena);
+			if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
+			{
+				Condiciones_Contrasena(y);
+				printf("Ingrese la contraseña:");
+				gets(Aux1.Contrasena);
+			}
 		}
 	}while(bandera1==1);
 	
@@ -397,13 +412,20 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
 		if(bandera2==1)
 		{
-			gotoxy(15,y);
+			gotoxy(25,y);
 			y++;
 			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
 			gotoxy(15,y);
 			y++;
-			printf("Ingrese el nombre de usuario:");
+			printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
+			_flushall();
 			gets(Aux1.Usuario);
+			if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
+			{
+				Condiciones_Usuario(y);
+				printf("Ingrese el nombre de usuario:");
+				gets(Aux1.Usuario);
+			}
 		}
 		
 		//Comparación***********************************************************************
@@ -421,7 +443,7 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 			}
 			if(bandera2==1)
 			{
-				gotoxy(15,y);
+				gotoxy(25,y);
 				y++;
 				printf("USUARIO EXISTENTE! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
 				gotoxy(15,y);
@@ -440,21 +462,33 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	gets(Aux1.ApellidoNombre);
 	gotoxy(15,y);
 	y++;
-	printf("Ingrese la contraseña:");
+	printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 	gets(Aux1.Contrasena);
+	if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
+	{
+		Condiciones_Contrasena(y);
+		printf("Ingrese la contraseña:");
+		gets(Aux1.Contrasena);
+	}
 	do
 	{
 		bandera1=0;
 		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
 		if(bandera1==1)
 		{
-			gotoxy(15,y);
+			gotoxy(25,y);
 			y++;
 			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
 			gotoxy(15,y);
 			y++;
-			printf("Ingrese la contraseña:");
+			printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 			gets(Aux1.Contrasena);
+			if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
+			{
+				Condiciones_Contrasena(y);
+				printf("Ingrese la contraseña:");
+				gets(Aux1.Contrasena);
+			}
 		}
 	}while(bandera1==1);
 	
