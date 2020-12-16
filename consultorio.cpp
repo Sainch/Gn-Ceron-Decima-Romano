@@ -60,7 +60,7 @@ main()
 void Iniciar_Sesion()
 {
 	FILE *Veterinarios;
-	Datos_Veterianrios Aux;
+	Datos_Veterinarios Aux;
 	int y=1;
 	char Usuario[11],Contrasena[33],bandera,ContInt=0;
 	
@@ -74,7 +74,7 @@ void Iniciar_Sesion()
 	
 	Veterinarios=fopen("Veterinarios.dat","rb");
 	
-	fread(&Aux,sizeof(Datos_Veterianrios),1,Veterinarios);
+	fread(&Aux,sizeof(Datos_Veterinarios),1,Veterinarios);
 	if(Veterinarios==NULL || strcmp(Aux.ApellidoNombre,"")==0)
 	{
 		gotoxy(35,y);y++;
@@ -98,13 +98,13 @@ void Iniciar_Sesion()
 	{
 		bandera=0;ContInt++;
 		rewind(Veterinarios);
-		fread(&Aux,sizeof(Datos_Veterianrios),1,Veterinarios);
+		fread(&Aux,sizeof(Datos_Veterinarios),1,Veterinarios);
 		while(!feof(Veterinarios) && bandera==0)
 		{
 			if(strcmp(Usuario,Aux.Usuario)==0)//compara con los usarios del archivo
 				bandera=1;
 			if(bandera==0)
-				fread(&Aux,sizeof(Datos_Veterianrios),1,Veterinarios);
+				fread(&Aux,sizeof(Datos_Veterinarios),1,Veterinarios);
 		}
 		if(bandera==1)//si encontró el usuario
 		{
@@ -118,9 +118,8 @@ void Iniciar_Sesion()
 			printf("================");
 			gotoxy(35,y);y++;
 			printf("INICIO DE SESIÓN");
-			gotoxy(35,y);y++;
+			gotoxy(35,y);y++;y++;
 			printf("================");
-			y++;
 			gotoxy(25,y);y++;
 			printf("ERROR! Se ingresó usuario o contraseña incorrecta.");
 			gotoxy(25,y);y++;

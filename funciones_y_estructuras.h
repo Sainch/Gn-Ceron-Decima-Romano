@@ -17,7 +17,7 @@ void LimpiarPantalla()
 
 typedef char palabra[50];
 
-struct Datos_Veterianrios
+struct Datos_Veterinarios
 {
 	char ApellidoNombre[60],Usuario[11],Contrasena[33],telefono[25];
 	int DNI,matricula;

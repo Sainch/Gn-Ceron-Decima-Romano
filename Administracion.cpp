@@ -14,6 +14,7 @@ int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
 void Registrar_Usuario_Asistente(FILE *);
 void Listar_Asistentes(FILE *Usuario_Asistente);
+void Listar_Veterinarios(FILE *Veterinarios);
 
 //**********************************AUXILIARES**********************************
 
@@ -34,7 +35,7 @@ main()
 	
 	int bandera=1;
 	char Opcion;
-	Datos_Veterianrios DatosVet[50];
+	Datos_Veterinarios DatosVet[50];
 	FILE *Veterinarios,*Usuario_Asistente;
 	
 	//**********************************************
@@ -64,6 +65,10 @@ main()
 				Listar_Asistentes(Usuario_Asistente);
 				break;
 			case'f':case'F':
+				LimpiarPantalla();
+				Listar_Veterinarios(Veterinarios);
+				break;
+			case'g':case'G':
 				bandera=0;
 				LimpiarPantalla();
 				gotoxy(35,2);
@@ -206,18 +211,20 @@ int MenuPrincipal_Administracion()
 	gotoxy(25,3);
 	printf("========================================="); 
 	gotoxy(25,4);
-	printf("a._Registrar Veterinario");
+	printf("a._Registrar Veterinario.");
 	gotoxy(25,5);
-	printf("b._Registrar Usuario Asistente");
+	printf("b._Registrar Usuario Asistente.");
 	gotoxy(25,6);
-	printf("c._Atenciones por Veterinarios");
+	printf("c._Atenciones por Veterinarios.");
 	gotoxy(25,7);
-	printf("d._Ranking de Veterinarios por Atenciones");
+	printf("d._Ranking de Veterinarios por Atenciones.");
 	gotoxy(25,8);
-	printf("e._Mostrar Asistentes");
-	gotoxy(25,10);
-	printf("f._Cerrar Aplicación");
-	gotoxy(25,12);
+	printf("e._Mostrar Asistentes.");
+	gotoxy(25,9);
+	printf("f._Mostrar Veterianarios.");
+	gotoxy(25,11);
+	printf("g._Cerrar Aplicación.");
+	gotoxy(25,13);
 	printf("Ingrese una opción:");
 	_flushall();
 	scanf("%c",&OP);
@@ -228,7 +235,7 @@ void Registrar_Veterinario(FILE *Veterinarios)
 {
 	int y=1;
 	int bandera1=0,bandera2,bandera3;
-	Datos_Veterianrios Aux1,Aux2;
+	Datos_Veterinarios Aux1,Aux2;
 	
 	Veterinarios=fopen("Veterinarios.dat","rb");
 	if(Veterinarios==NULL)
@@ -238,17 +245,13 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	fclose(Veterinarios);
 	
 	Veterinarios=fopen("Veterinarios.dat","a+b");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("======================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("INGRESO DE VETERINARIO");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("======================");
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
 	_flushall();
 	gets(Aux1.Usuario);
@@ -266,11 +269,9 @@ void Registrar_Veterinario(FILE *Veterinarios)
 		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
 		if(bandera2==1)
 		{
-			gotoxy(25,y);
-			y++;
+			gotoxy(25,y);y++;
 			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
-			gotoxy(15,y);
-			y++;
+			gotoxy(15,y);y++;
 			printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
 			_flushall();
 			gets(Aux1.Usuario);
@@ -286,22 +287,20 @@ void Registrar_Veterinario(FILE *Veterinarios)
 		if(bandera1==0 && bandera2==0)//si no hay veterinarios no compara, si se ingreso un usuario invalido no compara
 		{
 			rewind(Veterinarios);
-			fread(&Aux2,sizeof(Datos_Veterianrios),1,Veterinarios);
+			fread(&Aux2,sizeof(Datos_Veterinarios),1,Veterinarios);
 			while(!feof(Veterinarios) && bandera2==0)
 			{
 				if(strcmp(Aux2.Usuario,Aux1.Usuario)==0)//Usuario existente
 				{
 					bandera2=1;
 				}
-				fread(&Aux2,sizeof(Datos_Veterianrios),1,Veterinarios);
+				fread(&Aux2,sizeof(Datos_Veterinarios),1,Veterinarios);
 			}
 			if(bandera2==1)
 			{
-				gotoxy(25,y);
-				y++;
+				gotoxy(25,y);y++;
 				printf("USUARIO EXISTENTE! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
-				gotoxy(15,y);
-				y++;
+				gotoxy(15,y);y++;
 				printf("Ingrese el nombre de usuario:");
 				gets(Aux1.Usuario);
 			}
@@ -310,12 +309,10 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	
 	//**************************************************************
 	
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese el nombre y apellido:");
 	gets(Aux1.ApellidoNombre);
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 	gets(Aux1.Contrasena);
 	if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
@@ -333,11 +330,9 @@ void Registrar_Veterinario(FILE *Veterinarios)
 		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
 		if(bandera1==1)
 		{
-			gotoxy(25,y);
-			y++;
+			gotoxy(25,y);y++;
 			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
-			gotoxy(15,y);
-			y++;
+			gotoxy(15,y);y++;
 			printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 			gets(Aux1.Contrasena);
 			if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
@@ -351,20 +346,18 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	
 	//*****************************************************************
 	
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese la matrícula:");
 	scanf("%d",&Aux1.matricula);
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese el DNI:");
 	scanf("%d",&Aux1.DNI);
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	_flushall();
+	printf("Ingrese el telefono");
 	gets(Aux1.telefono);
 	
-	fwrite(&Aux1,sizeof(Datos_Veterianrios),1,Veterinarios);
+	fwrite(&Aux1,sizeof(Datos_Veterinarios),1,Veterinarios);
 	
 	fclose(Veterinarios);
 }
@@ -383,18 +376,14 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	fclose(Usuario_Asistente);
 	
 	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","a+b");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("====================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("INGRESO DE ASISTENTE");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("====================");
-	gotoxy(15,y);
-	y++;
-	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
+	gotoxy(15,y);y++;
+	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver las condiciones:");
 	_flushall();
 	gets(Aux1.Usuario);
 	if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
@@ -412,11 +401,9 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
 		if(bandera2==1)
 		{
-			gotoxy(25,y);
-			y++;
+			gotoxy(25,y);y++;
 			printf("USUARIO INVÁLIDO! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
-			gotoxy(15,y);
-			y++;
+			gotoxy(15,y);y++;
 			printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
 			_flushall();
 			gets(Aux1.Usuario);
@@ -443,11 +430,9 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 			}
 			if(bandera2==1)
 			{
-				gotoxy(25,y);
-				y++;
+				gotoxy(25,y);y++;
 				printf("USUARIO EXISTENTE! POR FAVOR INGRESE NUEVAMENTE EL NOMBRE DE USUARIO");
-				gotoxy(15,y);
-				y++;
+				gotoxy(15,y);y++;
 				printf("Ingrese el nombre de usuario:");
 				gets(Aux1.Usuario);
 			}
@@ -456,12 +441,10 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	
 	//**************************************************************
 	
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese el Apellido y Nombre:");
 	gets(Aux1.ApellidoNombre);
-	gotoxy(15,y);
-	y++;
+	gotoxy(15,y);y++;
 	printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 	gets(Aux1.Contrasena);
 	if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
@@ -476,11 +459,9 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 		bandera1=Verificar_Contrasena_Valida(Aux1.Contrasena);
 		if(bandera1==1)
 		{
-			gotoxy(25,y);
-			y++;
+			gotoxy(25,y);y++;
 			printf("CONTRASEÑA INVÁLIDA!POR FAVOR INGRESE NUEVAMENTE LA CONTRASEÑA");
-			gotoxy(15,y);
-			y++;
+			gotoxy(15,y);y++;
 			printf("Ingrese la contraseña o \"MOSTRAR\" para ver las condiciones:");
 			gets(Aux1.Contrasena);
 			if(strcmp(Aux1.Contrasena,"MOSTRAR")==0 || strcmp(Aux1.Contrasena,"mostrar")==0)
@@ -504,14 +485,11 @@ void Listar_Asistentes(FILE *Usuario_Asistente)
 	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","rb");
 	if(Usuario_Asistente!=NULL)
 	{
-		gotoxy(25,y);
-		y++;
+		gotoxy(25,y);y++;
 		printf("=====================");
-		gotoxy(25,y);
-		y++;
+		gotoxy(25,y);y++;
 		printf("LISTADO DE ASISTENTES");
-		gotoxy(25,y);
-		y++;y++;
+		gotoxy(25,y);y++;y++;
 		printf("=====================");
 		fread(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 		while(!feof(Usuario_Asistente))
@@ -525,9 +503,61 @@ void Listar_Asistentes(FILE *Usuario_Asistente)
 			fread(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 		}
 	}
+	else
+	{
+		gotoxy(35,y);y++;
+		printf("=============================");
+		gotoxy(35,y);y++;
+		printf("NO HAY ASISTENTES REGISTRADOS");
+		gotoxy(35,y);
+		printf("=============================");
+	}
 	fclose(Usuario_Asistente);
 }
 
+void Listar_Veterinarios(FILE *Veterinarios)
+{
+	Datos_Veterinarios Aux1;
+	int y=1;
+	
+	Veterinarios=fopen("Veterinarios.dat","rb");
+	if(Veterinarios!=NULL)
+	{
+		gotoxy(25,y);y++;
+		printf("=======================");
+		gotoxy(25,y);y++;
+		printf("LISTADO DE VETERINARIOS");
+		gotoxy(25,y);y++;y++;
+		printf("=======================");
+		fread(&Aux1,sizeof(Datos_Veterinarios),1,Veterinarios);
+		while(!feof(Veterinarios))
+		{
+			gotoxy(15,y);y++;
+			printf("Nombre:%s",Aux1.ApellidoNombre);
+			gotoxy(15,y);y++;
+			printf("Usuario:%s",Aux1.Usuario);
+			gotoxy(15,y);y++;
+			printf("Contraseña:%s",Aux1.Contrasena);
+			gotoxy(15,y);y++;
+			printf("Matricula:%d",Aux1.matricula);
+			gotoxy(15,y);y++;
+			printf("DNI:%d",Aux1.DNI);
+			gotoxy(15,y);y++;y++;
+			printf("Telefono:%s",Aux1.telefono);
+			fread(&Aux1,sizeof(Datos_Veterinarios),1,Veterinarios);
+		}
+	}
+	else
+	{
+		gotoxy(35,y);y++;
+		printf("===============================");
+		gotoxy(35,y);y++;
+		printf("NO HAY VETERINARIOS REGISTRADOS");
+		gotoxy(35,y);
+		printf("===============================");
+	}
+	fclose(Veterinarios);
+}
 
 //*****************************OTRAS FUNCIONES AUXILIARES***********************
 
@@ -615,60 +645,42 @@ int Verificar_Contrasena_Valida(char Contrasena[33])
 
 void Condiciones_Usuario(int &y)
 {
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("=================================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("CONDICIONES DEL NOMBRE DE USUARIO");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("=================================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("1.-Tener entre 6 y 10 caracteres.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("2.-Ser único.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("3.-Comenzar con una letra minúscula.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("4.-Tener al menos 2 letras mayúsculas.");
-	gotoxy(25,y);
-	y++;y++;
+	gotoxy(25,y);y++;y++;
 	printf("5.-Máximo de 3 dígitos.");
-	gotoxy(15,y);
-	y++;y++;
+	gotoxy(15,y);y++;y++;
 }
 
 void Condiciones_Contrasena(int &y)
 {
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("============================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("CONDICIONES DE LA CONTRASENA");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("============================");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("1.-Tener entre 6 y 32 caracteres.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("2.-Sólo puede contener cacracteres alfanuméricos.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("3.-Debe tener una letra mayúscula, una letra minúscula y un dígito.");
-	gotoxy(25,y);
-	y++;
+	gotoxy(25,y);y++;
 	printf("4.-NO debe tener más de tres caracteres númericos consecutivos.");
-	gotoxy(25,y);
-	y++;y++;
+	gotoxy(25,y);y++;y++;
 	printf("5.-NO debe tener dos caracteres alfabéticos consecutivos.");
-	gotoxy(15,y);
-	y++;y++;
+	gotoxy(15,y);y++;y++;
 }
