@@ -397,7 +397,7 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	do
 	{
 		bandera2=0;
-		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);
+		bandera2=Verificar_Usuario_Valido(Aux1.Usuario);//Verificar condiciones
 		if(bandera2==1)
 		{
 			gotoxy(25,y);y++;

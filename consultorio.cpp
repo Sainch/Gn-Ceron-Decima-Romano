@@ -234,11 +234,12 @@ void Visualizar_Lista_Espera(Turno VecTurnos[100], Mascota VecMascotas[100], int
 	
 	for(i=0;i<CantTurno;i++)
 	{
+		//comparar si la fecha es correcta, la matricula del veterinario es la del veterinario que incio sesión y el campo DetalleAtencion está vacio
 		if(VecTurnos[i].fecha.dia==Hoy.dia && VecTurnos[i].fecha.mes==Hoy.mes && VeterinarioIngresado.matricula==VecTurnos[i].MatriculaVeterinario && strcmp(VecTurnos[i].DetalleAtencion,"")==0)
 		{
 			bandera1=0;
 			bandera2=1;
-			for(j=0;j<CantMascotas && bandera1==0;j++)
+			for(j=0;j<CantMascotas && bandera1==0;j++)//busca la mascota para mostrar el nombre
 			{
 				if(VecTurnos[i].DNI_Duenio==VecMascotas[j].DNI_Dueno)
 				{
