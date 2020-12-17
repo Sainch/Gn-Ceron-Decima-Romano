@@ -35,7 +35,10 @@ struct Mascota
 
 void Iniciar_Sesion(Datos_Veterinarios &VeterinarioIngresado);
 int MenuPrincipalConsultorio();
-void Visualizar_Lista_Espera(Datos_Veterinarios VeterinarioIngresado);
+void Visualizar_Lista_Espera(Turno VecTurnos[100], Mascota VecMascotas[100], int CantTurno, int CantMascoas, Datos_Veterinarios VeterinarioIngresado , Fecha Hoy);
+void Registrar_Evolucion(Turno VecTurnos[100], Mascota VecMascotas[100], int CantTurno, int CantMascoas, Datos_Veterinarios VeterinarioIngresado , Fecha Hoy);
+void CargarVectores(Turno VecTurnos[100], Mascota VecMascotas[100], int &CantTurno, int &CantMascotas);
+void Guardar_Datos_Turnos(Turno VecTurnos[100], int CantTurno);
 
 //******************************************************************************
 
@@ -45,12 +48,26 @@ main()
 	setlocale(LC_CTYPE,"spanish");
 	system("color 3");
 	
-	int bandera=1;
+	int bandera1=1,bandera2=0,y=1,CantTurnos,CantMascotas;
 	char Opcion;
 	Datos_Veterinarios VeterinarioIngresado;
+	Fecha Hoy;
+	Turno VecTurnos[100];
+	Mascota VecMascotas[100];
 	
+	CargarVectores(VecTurnos,VecMascotas,CantTurnos,CantMascotas);
+	LimpiarPantalla();
 	Iniciar_Sesion(VeterinarioIngresado);
-	LimpiarPantalla();	
+	LimpiarPantalla();
+	gotoxy(15,y);y++;
+	printf("Ingrese la fecha actual.");
+	gotoxy(15,y);y++;
+	printf("Mes:");
+	scanf("%d",&Hoy.mes);
+	gotoxy(15,y);y++;
+	printf("Dia:");
+	scanf("%d",&Hoy.dia);
+	LimpiarPantalla();
 	do
 	{
 		Opcion=MenuPrincipalConsultorio();
@@ -58,13 +75,29 @@ main()
 		{
 			case'a':case'A':
 				LimpiarPantalla();
-				Visualizar_Lista_Espera(VeterinarioIngresado);
+				Visualizar_Lista_Espera(VecTurnos,VecMascotas,CantTurnos,CantMascotas,VeterinarioIngresado,Hoy);
+				bandera2=1;
 				break;
 			case'b':case'B':
+				if(bandera2==1)
+				{
+					LimpiarPantalla();
+					Registrar_Evolucion(VecTurnos,VecMascotas,CantTurnos,CantMascotas,VeterinarioIngresado,Hoy);	
+				}
+				else
+				{
+					gotoxy(15,11);
+					printf("==========================================");
+					gotoxy(15,12);
+					printf("DEBE INGRESAR PRIMERO AL LISTADO DE TURNOS");
+					gotoxy(15,13);
+					printf("==========================================");
+				}
 				break;
 			case'c':case'C':
-				bandera=0;
+				bandera1=0;
 				LimpiarPantalla();
+				Guardar_Datos_Turnos(VecTurnos,CantTurnos);
 				gotoxy(35,2);
 				printf("__________________");
 				gotoxy(35,3);
@@ -84,7 +117,7 @@ main()
 		
 		LimpiarPantalla();
 		
-	}while(bandera==1);
+	}while(bandera1==1);
 }
 
 void Iniciar_Sesion(Datos_Veterinarios &VeterinarioIngresado)
@@ -215,67 +248,134 @@ int MenuPrincipalConsultorio()
 	return OP;
 }
 
-void Visualizar_Lista_Espera(Datos_Veterinarios VeterinarioIngresado)
+void Visualizar_Lista_Espera(Turno VecTurnos[100], Mascota VecMascotas[100], int CantTurno, int CantMascotas, Datos_Veterinarios VeterinarioIngresado , Fecha Hoy)
 {
-	Turno Aux1;
-	Mascota Aux2;
-	Datos_Veterinarios Aux3;
+	int i,j=0,k=0,bandera1=0,bandera2=0;
+	int y=1;
 	
-	Fecha Hoy;
-	Hoy.anio=2020;//Cambiar al año
-	int y=1,ContTurn=0,bandera1,bandera2=0,i=0;
-	
-	FILE *ArchTurnos,*ArchMascotas;
-	ArchTurnos=fopen("Turnos.dat","rb");
-	ArchMascotas=fopen("Mascotas.dat","rb");
-	
-	gotoxy(15,y);y++;
-	printf("Ingrese la fecha actual.");
-	gotoxy(15,y);y++;
-	printf("Mes:");
-	scanf("%d",&Hoy.mes);
-	gotoxy(15,y);y++;
-	printf("Dia:");
-	scanf("%d",&Hoy.dia);
-	
-	LimpiarPantalla();
-	y=1;gotoxy(35,y);y++;
+	gotoxy(35,y);y++;
 	printf("=================");
 	gotoxy(35,y);y++;
-	printf("LISTADO DE TURNOS");
+	printf("LISTADA DE ESPERA");
 	gotoxy(35,y);y++;y++;
 	printf("=================");
 	
-	rewind(ArchTurnos);
-	fread(&Aux1,sizeof(Turno),1,ArchTurnos);
-	while(!feof(ArchTurnos))
+	for(i=0;i<CantTurno;i++)
 	{
-		if(Aux1.fecha.mes==Hoy.mes && Aux1.fecha.dia==Hoy.dia && VeterinarioIngresado.matricula==Aux1.MatriculaVeterinario)//dia y veterinario correspondiente
+		if(VecTurnos[i].fecha.dia==Hoy.dia && VecTurnos[i].fecha.mes==Hoy.mes && VeterinarioIngresado.matricula==VecTurnos[i].MatriculaVeterinario && strcmp(VecTurnos[i].DetalleAtencion,"")==0)
 		{
-			bandera2=1;//hay algun para el día?
 			bandera1=0;
-			fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
-			while(!feof(ArchMascotas) && bandera1==0)
+			bandera2=1;
+			for(j=0;j<CantMascotas && bandera1==0;j++)
 			{
-				if(Aux1.DNI_Duenio==Aux2.DNI_Dueno)
+				if(VecTurnos[i].DNI_Duenio==VecMascotas[j].DNI_Dueno)
+				{
 					bandera1=1;
-				if(bandera1==0)
-					fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
+					j--;
+				}
 			}
 			gotoxy(15,y);y++;y++;
-			printf("%d°:%s",i+1,Aux2.ApellidoyNombre);
-			i++;
+			printf("%d°.%s",k+1,VecMascotas[j].ApellidoyNombre);
+			k++;
 		}
-		fread(&Aux1,sizeof(Turno),1,ArchTurnos);
 	}
 	if(bandera2==0)
 	{
 		gotoxy(35,y);y++;
-		printf("NO TIENE TURNOS PARA EL DÍA");
+		printf("NO HAY TURNOS DE PACIENTES");
 		gotoxy(35,y);y++;
-		printf("===========================");
+		printf("==========================");
 	}
+}
+
+void Registrar_Evolucion(Turno VecTurnos[100], Mascota VecMascotas[100], int CantTurno, int CantMascotas, Datos_Veterinarios VeterinarioIngresado , Fecha Hoy)
+{
+	int i,j=0,bandera1=0,bandera2=0;
+	int y=1;
 	
+	gotoxy(35,y);y++;
+	printf("===========================");
+	gotoxy(35,y);y++;
+	printf("INGRESO DETALLE DE ATENCIÓN");
+	gotoxy(35,y);y++;y++;
+	printf("===========================");
+	
+	for(i=0;i<CantTurno && bandera2==0;i++)
+	{
+		if(VecTurnos[i].fecha.dia==Hoy.dia && VecTurnos[i].fecha.mes==Hoy.mes && VeterinarioIngresado.matricula==VecTurnos[i].MatriculaVeterinario && strcmp(VecTurnos[i].DetalleAtencion,"")==0)
+		{
+			bandera1=0;
+			bandera2=1;
+			for(j=0;j<CantMascotas && bandera1==0;j++)
+			{
+				if(VecTurnos[i].DNI_Duenio==VecMascotas[j].DNI_Dueno)
+				{
+					bandera1=1;
+					j--;
+				}
+			}
+			gotoxy(15,y);y++;y++;
+			printf("*%s",VecMascotas[j].ApellidoyNombre);
+			gotoxy(15,y);y++;
+			printf("Ingrese el detalle de la Atención:");
+			_flushall();
+			gets(VecTurnos[i].DetalleAtencion);
+		}
+	}
+	if(bandera2==0)
+	{
+		gotoxy(35,y);y++;
+		printf("NO HAY TURNOS DE PACIENTES");
+		gotoxy(35,y);y++;
+		printf("==========================");
+	}
+}
+
+void CargarVectores(Turno VecTurnos[100], Mascota VecMascotas[100], int &CantTurno, int &CantMascotas)
+{
+	Turno Aux1;
+	Mascota Aux2;
+	int i=0;
+	FILE *ArchTurnos,*ArchMascotas;
+	
+	ArchTurnos=fopen("Turnos.dat","r+b");
+	ArchMascotas=fopen("Mascotas.dat","a+b");
+	
+	fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	while(!feof(ArchTurnos))
+	{
+		printf("\nMat %d",Aux1.MatriculaVeterinario);
+		printf("\nDNI: %d",Aux1.DNI_Duenio);
+		printf("\nDetalleAtencion %s",Aux1.DetalleAtencion);
+		VecTurnos[i]=Aux1;
+		i++;
+		fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	}
+	CantTurno=i;
+	i=0;
+	fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
+	while(!feof(ArchMascotas))
+	{
+		VecMascotas[i]=Aux2;
+		i++;
+		fread(&Aux2,sizeof(Mascota),1,ArchMascotas);
+	}
+	CantMascotas=i;
 	fclose(ArchTurnos);
 	fclose(ArchMascotas);
+}
+
+void Guardar_Datos_Turnos(Turno VecTurnos[100], int CantTurno)
+{
+	int i;
+	Turno Aux1;
+	
+	FILE *ArchTurnos;
+	ArchTurnos=fopen("Turnos.dat","w+b");
+	
+	for(i=0;i<CantTurno;i++)
+	{
+		Aux1=VecTurnos[i];
+		fwrite(&Aux1,sizeof(Turno),1,ArchTurnos);
+	}
 }
