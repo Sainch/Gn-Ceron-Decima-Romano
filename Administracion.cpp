@@ -6,30 +6,6 @@
 #include<iostream>
 #include"funciones_y_estructuras.h"
 
-struct Fecha
-{
-	int dia;
-	int mes;
-	int anio;
-};
-struct Mascota
-{
-	char ApellidoyNombre[60];
-	char Domicilio[60];
-	int DNI_Dueno;
-	char Localidad[60];
-	Fecha FechadeNacimiento;
-	float Peso;
-	char Telefono[25];
-};
-struct Turno
-{
-	int MatriculaVeterinario;
-	Fecha fecha;
-	int DNI_Duenio;
-	char DetalleAtencion[380];
-};
-
 
 //**********************************FUNCIONES***********************************
 
