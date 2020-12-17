@@ -31,9 +31,9 @@ struct Turno
 void Inicio_de_Sesion();
 int MenuPrincipalAsistente();
 void registrarMascotas(FILE *Mascotas);
-void mensaje(char const *cadena);
 void registrarTurnos(FILE *Turnos,FILE *Mascotas);
 void listarMascotas(FILE *Mascotas);
+void ObtenerInforme(FILE *Turnos);
 
 main()
 {
@@ -42,28 +42,22 @@ main()
 	
 	Inicio_de_Sesion(); //Inicio del módulo de asistente
 	LimpiarPantalla();
-	
-	FILE *ArchMascotas; //Se abre de lectura para conservar
-	ArchMascotas = fopen("Mascotas.dat","rb"); //los anteriores registros.
+
+	FILE *ArchMascotas;
+	ArchMascotas = fopen("Mascotas.dat","rb"); 
 	fclose(ArchMascotas);
-	if(ArchMascotas == NULL) // Evalua, Si hubo error, muestra mensaje y termina.
+	if(ArchMascotas == NULL) // Evalua si hubo error.
 	{
-		system("CLS");
-		printf("Ocurrio un error en la apertura del Archivo....");
 		ArchMascotas = fopen("Mascotas.dat","w+b");
-		//exit(1);
 	}
 	ArchMascotas = fopen("Mascotas.dat","a+b");
 	
-	FILE *ArchTurnos; //Se abre de lectura para conservar
-	ArchTurnos = fopen("Turnos.dat","rb"); //los anteriores registros.
+	FILE *ArchTurnos; 
+	ArchTurnos = fopen("Turnos.dat","rb"); 
 	fclose(ArchTurnos);
-	if(ArchTurnos == NULL) // Evalua, Si hubo error, muestra mensaje y termina.
+	if(ArchTurnos == NULL) // Evalua si hubo error.
 	{
-		system("CLS");
-		printf("Ocurrio un error en la apertura del Archivo....");
 		ArchTurnos = fopen("Turnos.dat","w+b");
-		//exit(1);
 	}
 	ArchTurnos = fopen("Turnos.dat","a+b");
 	
@@ -86,6 +80,9 @@ main()
 				Opcion = MenuPrincipalAsistente();
 				break;
 			case 3:
+				LimpiarPantalla();
+				ObtenerInforme(ArchTurnos);
+				LimpiarPantalla();
 				Opcion = MenuPrincipalAsistente();
 				break;
 			case 4:
@@ -117,8 +114,16 @@ void Inicio_de_Sesion()
 	FILE *Usuario_Asistente;
 	Usuario_Asistente=fopen("Usuarios_Asistentes.dat","rb");
 	
-	printf("Usuario: "); gets(usuario);
-	printf("Contraseña: "); gets(contrasena);
+	gotoxy(50,2);
+	printf("INICIAR SESIÓN");
+	gotoxy(45,3);
+	printf("=========================");
+	gotoxy(45,4);
+	printf("Usuario: "); 
+	gets(usuario);
+	gotoxy(45,5);
+	printf("Contraseña: "); 
+	gets(contrasena);
 	
 	do
 	{
@@ -146,6 +151,7 @@ void Inicio_de_Sesion()
 		}
 		if (bandera==0)
 		{
+			gotoxy(45,7);
 			printf("Usuario y contraseña incorrectos");
 			LimpiarPantalla();
 			Inicio_de_Sesion();
@@ -154,15 +160,14 @@ void Inicio_de_Sesion()
 	
 	fclose(Usuario_Asistente);
 }
-
 int MenuPrincipalAsistente()
 {
 	int Opcion;
 	
 	gotoxy(45,2);
-	printf("Modulo del Asistente");
+	printf("BIENVENIDO AL MÓDULO DEL ASISTENTE");
 	gotoxy(45,3);
-	printf("========================="); 
+	printf("==================================="); 
 	gotoxy(45,4);
 	printf("1.- Registrar Mascota");
 	gotoxy(45,5);
@@ -179,62 +184,63 @@ int MenuPrincipalAsistente()
 	scanf("%d",&Opcion);
 	return Opcion;
 }
-
-void mensaje(char const *cadena)
-{
-	printf("\n %50s ", cadena);
-	system("PAUSE");
-} //Fin de la función mensaje()
-
 void registrarMascotas(FILE *Mascotas)
 {
 	Mascota reg; //crea la variable "reg" de tipo Mascota.
-	int nroReg=0; //Variable contador del nro de registros almacenado.
-	char continua='N';
+	int continua;
 
 	do
 	{
-		printf("\t** Registro Nro %3.0d **\n", ++nroReg);
-		printf("\t****************************\n\n");
+		gotoxy(52,2);
+		printf("REGISTRO DE MASCOTA");
+		gotoxy(45,3);
+		printf("==================================="); 
 		_flushall();
-		printf("\n\t Apellido y Nombre: ");
+		gotoxy(45,4);
+		printf("Apellido y Nombre: ");
 		gets(reg.ApellidoyNombre);
 		strupr(reg.ApellidoyNombre);
-		printf("\n\t Domicilio: ");
+		gotoxy(45,5);
+		printf("Domicilio: ");
 		gets(reg.Domicilio);
 		strupr(reg.Domicilio);
-		printf("\n\t DNI del Dueño: ");
+		gotoxy(45,6);
+		printf("DNI del Dueño: ");
 		scanf("%d",&reg.DNI_Dueno);
 		_flushall();
-		printf("\n\t Localidad: ");
+		gotoxy(45,7);
+		printf("Localidad: ");
 		gets(reg.Localidad);
 		strupr(reg.Localidad);
-		printf("\n\t Fecha de Nacimiento: \n");
-		printf("\n\t Dia: ");
+		gotoxy(45,8);
+		printf("Fecha de Nacimiento: ");
+		gotoxy(45,9);
+		printf("Dia: ");
 		scanf("%d",&reg.FechadeNacimiento.dia);
-		printf("\n\t Mes: ");
+		gotoxy(45,10);
+		printf("Mes: ");
 		scanf("%d",&reg.FechadeNacimiento.mes);
-		printf("\n\t Anio: ");
+		gotoxy(45,11);
+		printf("Anio: ");
 		scanf("%d",&reg.FechadeNacimiento.anio);
-		printf("\n\t Peso(kg): ");
+		gotoxy(45,12);
+		printf("Peso(kg): ");
 		scanf("%f",&reg.Peso);
 		_flushall();
-		printf("\n\t Telefono: ");
+		gotoxy(45,13);
+		printf("Telefono: ");
 		gets(reg.Telefono);
 		fwrite(&reg, sizeof(Mascota), 1, Mascotas); //Graba el registro lógico.
 		_flushall();
-		printf("\n\nContinuar Registrando Mascotas (S/N): ");
-		scanf("%c", &continua);
-	}while(continua == 'S' || continua == 's');
-	system("CLS");
-	mensaje("Fin de la carga");
+		gotoxy(42,15);
+		printf("¿Aun desea registrar mascotas SI(1) / NO(0): ");
+		scanf("%d", &continua);
+		LimpiarPantalla();
+	}while(continua == 1);
 }
-
 void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 {
-	int nroTur=0; //Variable contador del nro de turnos almacenados.
-	char continua='N';
-	int bandera;
+	int bandera,continua,y=11;
 	
 	Turno regi;
 	FILE *ArchTurnos;
@@ -248,11 +254,16 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 	FILE *Veterinarios;
 	Veterinarios=fopen("Veterinarios.dat","rb");
 	
-	printf("\n\n\t Ingrese Nro de DNI del dueño: ");
-	scanf("%d", &regi.DNI_Duenio);
-	
 	do
 	{
+		gotoxy(55,2);
+		printf("REGISTRO DE TURNO");
+		gotoxy(45,3);
+		printf("==================================="); 
+		gotoxy(45,4);
+		printf("Ingrese Nro de DNI del dueño: ");
+		scanf("%d", &regi.DNI_Duenio);
+		
 		bandera=0;
 		rewind(Mascotas);
 		fread(&reg,sizeof(Mascota),1,Mascotas);
@@ -270,96 +281,156 @@ void registrarTurnos(FILE *Turnos, FILE *Mascotas)
 		}
 		if (bandera==1) //si ingresa bien el dni, muestra la lista de veterinarios, y se pide asignar dia del turno
 		{
-			do{
-			printf("Asignar Turno a %s",reg.ApellidoyNombre);
+			gotoxy(50,6);
+			printf("Asignar Turno a: %s",reg.ApellidoyNombre);
 			
-			//MOSTRAR LISTA DE VETERINARIOS
-			printf("\tListado de Veterinarios\n");
-			printf("\t*********************************************************\n\n");
-			printf("\tApellido y Nombre \t Matricula **\n\n");
+			gotoxy(54,8);
+			printf("LISTA DE VETERINARIOS");
+			gotoxy(46,9);
+			printf("*********************************");
+			gotoxy(45,10);
+			printf("Apellido y Nombre");
+			gotoxy(75,10);
+			printf("Matricula");
 			rewind(Veterinarios); //Ubica el puntero en el primer registro del archivo.
 			fread(&vet, sizeof(Datos_Veterinarios), 1, Veterinarios); //Leer el primer registro.
 			
 			if (feof(Veterinarios))
 			{
-				printf("El Archivo esta vacio\n No se Registro Informacion.");
+				gotoxy(43,2);
+				printf("El Archivo esta vacio no se Registró Información.");
 			}
 			else
 			{
 				while(!feof(Veterinarios)) //Repite hasta el último registro.
 				{
-					printf("\t %s ", vet.ApellidoNombre);
-					printf("\t %d ", vet.matricula);
-					printf("\n");
+					gotoxy(45,y);
+					printf("%s ", vet.ApellidoNombre);
+					gotoxy(75,y);
+					printf("%d ", vet.matricula);
 					fread(&vet, sizeof(Datos_Veterinarios), 1, Veterinarios); //Continua leyendo.
+					y++;
 				}
 			}
+			gotoxy(45,15);
 			printf("Ingrese una matricula: ");//ELEGIR UN VETERINARIO
 			scanf("%d", &regi.MatriculaVeterinario);
-			
-			printf("\n\t Ingrese Fecha del Turno: \n");
-			printf("\n\t Dia: ");
+			gotoxy(45,16);
+			printf("Ingrese Fecha del Turno: ");
+			gotoxy(45,17);
+			printf("Dia: ");
 			scanf("%d",&regi.fecha.dia);
-			printf("\n\t Mes: ");
+			gotoxy(45,18);
+			printf("Mes: ");
 			scanf("%d",&regi.fecha.mes);
-			printf("\n\t Anio: ");
+			gotoxy(45,19);
+			printf("Anio: ");
 			scanf("%d",&regi.fecha.anio);
 			fwrite(&regi,sizeof(Turno),1,ArchTurnos); //Graba el registro lógico.
-			_flushall();
-			printf("\n\nContinuar Registrando Turnos (S/N): ");
-			scanf("%c", &continua);
-			
-			}while(continua == 'S' || continua == 's');
-			system("CLS");
-			mensaje("Fin de la carga");
 		}
 		if (bandera==0)
 		{
+			gotoxy(45,6);
 			printf("El DNI ingresado no existe");
 			LimpiarPantalla();
-			printf("\n\n\t Ingrese Nro de DNI del dueño: ");
-			scanf("%d", &regi.DNI_Duenio);
-			//registrarTurnos(ArchTurnos,ArchMascotas);
 		}
-	}while(bandera==0); //sale si se ingresa dni correcto
-	
-	//fclose(Turnos);
-	//fclose(Mascotas);
+		gotoxy(45,23);
+		printf("¿Aun desea registrar turnos? SI(1) / NO(0): ");
+		scanf("%d", &continua);
+		LimpiarPantalla();
+	}while(continua == 1 );
+
 	fclose(Veterinarios);
 }
-
 void listarMascotas(FILE *Mascotas)
 {
-	Mascota reg; //Registro logico.
-	/*----- Titulo del listado -----*/
-	system("CLS");
-	printf("\tL I S T A D O DE MASCOTAS\n");
-	printf("\t*********************************************************\n\n");
-	printf("\tApellido y Nombre \t Domicilio \t DNI del Dueño \t Localidad \t Fecha de Nacimiento \t Peso \t Telefono **\n\n");
-	printf("\t*********************************************************\n\n");
-	/*----- Listado de las Mascotas -----*/
+	Mascota reg;
+	gotoxy(46,2);
+	printf("LISTADO DE MASCOTAS REGISTRADAS");
+	gotoxy(46,3);
+	printf("==================================="); 
+	gotoxy(0,4);
+	printf("Apellido y Nombre");
+	gotoxy(24,4);
+	printf("Domicilio");
+	gotoxy(39,4);
+	printf("DNI del Dueño");
+	gotoxy(59,4);
+	printf("Localidad");
+	gotoxy(74,4);
+	printf("Fecha de Nacimiento");
+	gotoxy(99,4);
+	printf("Peso");
+	gotoxy(109,4);
+	printf("Telefono");
 	rewind(Mascotas); //Ubica el puntero en el primer registro del archivo.
 	fread(&reg, sizeof(Mascota), 1, Mascotas); //Leer el primer registro.
 	
+	int y=5;
+	
 	if (feof(Mascotas))
 	{
-		system("CLS");
-		printf("El Archivo esta vacio\n No se Registro Informacion.");
+		gotoxy(42,3);
+		printf("El Archivo esta vacio No se Registro Informacion.");
 	}
 	else
 	{
 		while(!feof(Mascotas)) //Repite hasta el último registro.
 		{
-			printf("\t %s ", reg.ApellidoyNombre);
-			printf("\t %s ", reg.Domicilio);
-			printf("\t %d ", reg.DNI_Dueno);
-			printf("\t %s ", reg.Localidad);
-			printf("\t %d/%d/%d ", reg.FechadeNacimiento.dia, reg.FechadeNacimiento.mes, reg.FechadeNacimiento.anio);
-			printf("\t %.2f ", reg.Peso);
-			printf("\t %s ", reg.Telefono);
-			printf("\n");
+			gotoxy(0,y);
+			printf("%s ", reg.ApellidoyNombre);
+			gotoxy(24,y);
+			printf("%s ", reg.Domicilio);
+			gotoxy(39,y);
+			printf("%d ", reg.DNI_Dueno);
+			gotoxy(59,y);
+			printf("%s ", reg.Localidad);
+			gotoxy(74,y);
+			printf("%d/%d/%d ", reg.FechadeNacimiento.dia, reg.FechadeNacimiento.mes, reg.FechadeNacimiento.anio);
+			gotoxy(99,y);
+			printf("%.1f Kg", reg.Peso);
+			gotoxy(109,y);
+			printf("%s ", reg.Telefono);
 			fread(&reg, sizeof(Mascota), 1, Mascotas); //Continua leyendo.
+			y++;
 		}
 	}
-	printf("F i n del L i s t a d o");
+}
+void ObtenerInforme(FILE *Turnos)
+{
+	int y=5;
+	Turno regi;
+	gotoxy(40,2);
+	printf("INFORME DE ATENCIONES POR VETERINARIO Y FECHA");
+	gotoxy(40,3);
+	printf("============================================="); 
+	gotoxy(20,4);
+	printf("Matricula Veterinario");
+	gotoxy(50,4);
+	printf("Fecha de Atencion");
+	gotoxy(75,4);
+	printf("DNI del dueño del Paciente");
+
+	rewind(Turnos); //Ubica el puntero en el primer registro del archivo.
+	fread(&regi, sizeof(Turno), 1, Turnos); //Leer el primer registro.
+	
+	if (feof(Turnos))
+	{
+		gotoxy(42,3);
+		printf("El Archivo esta vacio no se Registro Informacion.");
+	}
+	else
+	{
+		while(!feof(Turnos)) //Repite hasta el último registro.
+		{
+			gotoxy(20,y);
+			printf("%d ",regi.MatriculaVeterinario);
+			gotoxy(50,y);
+			printf("%d/%d/%d ",regi.fecha.dia,regi.fecha.mes,regi.fecha.anio);
+			gotoxy(75,y);
+			printf("%d ",regi.DNI_Duenio);
+			fread(&regi, sizeof(Turno), 1, Turnos); //Continua leyendo.
+			y++;
+		}
+	}
 }
