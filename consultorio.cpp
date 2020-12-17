@@ -55,12 +55,11 @@ main()
 	Turno VecTurnos[100];
 	Mascota VecMascotas[100];
 	
-	CargarVectores(VecTurnos,VecMascotas,CantTurnos,CantMascotas);
-	LimpiarPantalla();
 	Iniciar_Sesion(VeterinarioIngresado);
 	LimpiarPantalla();
+	CargarVectores(VecTurnos,VecMascotas,CantTurnos,CantMascotas);//Cargar los datos en vectores para facilitar su manipulacion
 	gotoxy(15,y);y++;
-	printf("Ingrese la fecha actual.");
+	printf("Ingrese la fecha actual.");//fecha de referencia para el programa
 	gotoxy(15,y);y++;
 	printf("Mes:");
 	scanf("%d",&Hoy.mes);
@@ -285,7 +284,14 @@ void Visualizar_Lista_Espera(Turno VecTurnos[100], Mascota VecMascotas[100], int
 		printf("NO HAY TURNOS DE PACIENTES");
 		gotoxy(35,y);y++;
 		printf("==========================");
+		return ;
 	}
+	gotoxy(15,y);y++;
+	printf("===================================================================================");
+	gotoxy(15,y);y++;
+	printf("ATENCIÓN! EL INGRESO DEL DETALLE DE LA CONSULTA SE REALIZARÁ EN EL RESPECTIVO ORDEN");
+	gotoxy(15,y);
+	printf("===================================================================================");
 }
 
 void Registrar_Evolucion(Turno VecTurnos[100], Mascota VecMascotas[100], int CantTurno, int CantMascotas, Datos_Veterinarios VeterinarioIngresado , Fecha Hoy)
@@ -300,8 +306,10 @@ void Registrar_Evolucion(Turno VecTurnos[100], Mascota VecMascotas[100], int Can
 	gotoxy(35,y);y++;y++;
 	printf("===========================");
 	
+	
 	for(i=0;i<CantTurno && bandera2==0;i++)
 	{
+		//Verificar si el turno  corresponde al dia, ademas si la matricula del veterinario es la correspondiente, y además, si todavia no se escribio el detalle
 		if(VecTurnos[i].fecha.dia==Hoy.dia && VecTurnos[i].fecha.mes==Hoy.mes && VeterinarioIngresado.matricula==VecTurnos[i].MatriculaVeterinario && strcmp(VecTurnos[i].DetalleAtencion,"")==0)
 		{
 			bandera1=0;
@@ -344,9 +352,6 @@ void CargarVectores(Turno VecTurnos[100], Mascota VecMascotas[100], int &CantTur
 	fread(&Aux1,sizeof(Turno),1,ArchTurnos);
 	while(!feof(ArchTurnos))
 	{
-		printf("\nMat %d",Aux1.MatriculaVeterinario);
-		printf("\nDNI: %d",Aux1.DNI_Duenio);
-		printf("\nDetalleAtencion %s",Aux1.DetalleAtencion);
 		VecTurnos[i]=Aux1;
 		i++;
 		fread(&Aux1,sizeof(Turno),1,ArchTurnos);
@@ -378,4 +383,5 @@ void Guardar_Datos_Turnos(Turno VecTurnos[100], int CantTurno)
 		Aux1=VecTurnos[i];
 		fwrite(&Aux1,sizeof(Turno),1,ArchTurnos);
 	}
+	fclose(ArchTurnos);
 }

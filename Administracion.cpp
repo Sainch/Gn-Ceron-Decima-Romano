@@ -6,13 +6,38 @@
 #include<iostream>
 #include"funciones_y_estructuras.h"
 
+struct Fecha
+{
+	int dia;
+	int mes;
+	int anio;
+};
+struct Mascota
+{
+	char ApellidoyNombre[60];
+	char Domicilio[60];
+	int DNI_Dueno;
+	char Localidad[60];
+	Fecha FechadeNacimiento;
+	float Peso;
+	char Telefono[25];
+};
+struct Turno
+{
+	int MatriculaVeterinario;
+	Fecha fecha;
+	int DNI_Duenio;
+	char DetalleAtencion[380];
+};
+
 
 //**********************************FUNCIONES***********************************
 
 void Inicio_de_Sesion();
 int MenuPrincipal_Administracion();
 void Registrar_Veterinario(FILE *Veterinarios);
-void Registrar_Usuario_Asistente(FILE *);
+void Registrar_Usuario_Asistente(FILE *Usuario_Asistente);
+void Rankin_Veterinarios_Atenciones(FILE *Veterinarios);
 void Listar_Asistentes(FILE *Usuario_Asistente);
 void Listar_Veterinarios(FILE *Veterinarios);
 
@@ -57,18 +82,18 @@ main()
 				Registrar_Usuario_Asistente(Usuario_Asistente);
 				break;
 			case'c':case'C':
+				LimpiarPantalla();
+				Rankin_Veterinarios_Atenciones(Veterinarios);
 				break;
 			case'd':case'D':
-				break;
-			case'e':case'E':
 				LimpiarPantalla();
 				Listar_Asistentes(Usuario_Asistente);
 				break;
-			case'f':case'F':
+			case'e':case'E':
 				LimpiarPantalla();
 				Listar_Veterinarios(Veterinarios);
 				break;
-			case'g':case'G':
+			case'f':case'F':
 				bandera=0;
 				LimpiarPantalla();
 				gotoxy(35,2);
@@ -215,16 +240,14 @@ int MenuPrincipal_Administracion()
 	gotoxy(25,5);
 	printf("b._Registrar Usuario Asistente.");
 	gotoxy(25,6);
-	printf("c._Atenciones por Veterinarios.");
+	printf("c._Ranking de Veterinarios por Atenciones del Mes.");
 	gotoxy(25,7);
-	printf("d._Ranking de Veterinarios por Atenciones.");
+	printf("d._Mostrar Asistentes.");
 	gotoxy(25,8);
-	printf("e._Mostrar Asistentes.");
-	gotoxy(25,9);
-	printf("f._Mostrar Veterianarios.");
-	gotoxy(25,11);
-	printf("g._Cerrar Aplicación.");
-	gotoxy(25,13);
+	printf("e._Mostrar Veterianarios.");
+	gotoxy(25,10);
+	printf("f._Cerrar Aplicación.");
+	gotoxy(25,12);
 	printf("Ingrese una opción:");
 	_flushall();
 	scanf("%c",&OP);
@@ -252,7 +275,7 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	gotoxy(25,y);y++;
 	printf("======================");
 	gotoxy(15,y);y++;
-	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver elas condiciones:");
+	printf("Ingrese el nombre de usuario o \"MOSTRAR\" para ver las condiciones:");
 	_flushall();
 	gets(Aux1.Usuario);
 	if(strcmp(Aux1.Usuario,"MOSTRAR")==0 ||strcmp(Aux1.Usuario,"mostrar")==0)
@@ -354,7 +377,7 @@ void Registrar_Veterinario(FILE *Veterinarios)
 	scanf("%d",&Aux1.DNI);
 	gotoxy(15,y);y++;
 	_flushall();
-	printf("Ingrese el telefono");
+	printf("Ingrese el telefono:");
 	gets(Aux1.telefono);
 	
 	fwrite(&Aux1,sizeof(Datos_Veterinarios),1,Veterinarios);
@@ -475,6 +498,104 @@ void Registrar_Usuario_Asistente(FILE *Usuario_Asistente)
 	
 	fwrite(&Aux1,sizeof(Datos_Usuarios_Asistentes),1,Usuario_Asistente);
 	fclose(Usuario_Asistente);
+}
+
+void Rankin_Veterinarios_Atenciones(FILE *Veterinarios)
+{
+	Turno Aux1,VecTurnos[100];
+	Mascota Aux2,VecMascotas[100];
+	Datos_Veterinarios Aux3,VecVeterinarios[20];
+	FILE *ArchTurnos,*ArchMascotas;
+	int CantTurnos,CantVeterinarios,i,j,k,y=1,mes,bandera;
+	int VecCantTurnosVet[20],Aux4;
+	
+	//Cargar los datos en un archivo
+	
+	Veterinarios=fopen("Veterinarios.dat","rb");
+	ArchTurnos=fopen("Turnos.dat","rb");
+	
+	fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	while(!feof(ArchTurnos))
+	{
+		VecTurnos[i]=Aux1;
+		i++;
+		fread(&Aux1,sizeof(Turno),1,ArchTurnos);
+	}
+	CantTurnos=i;
+	i=0;
+	fread(&Aux3,sizeof(Datos_Veterinarios),1,Veterinarios);
+	while(!feof(Veterinarios))
+	{
+		VecVeterinarios[i]=Aux3;
+		i++;
+		fread(&Aux3,sizeof(Datos_Veterinarios),1,Veterinarios);
+	}
+	CantVeterinarios=i;
+	fclose(Veterinarios);
+	fclose(ArchTurnos);
+	
+	gotoxy(35,y);y++;
+	printf("===========================================");
+	gotoxy(35,y);y++;
+	printf("RANKING DE TURNOS ATENDIDOS DE VETERINARIOS");
+	gotoxy(35,y);y++;y++;
+	printf("===========================================");	
+	if(CantVeterinarios==0)
+	{
+		gotoxy(35,y);y++;
+		printf("NO HAY VETERINARIOS INGRESADOS");
+		gotoxy(35,y);
+		return;
+	}
+	gotoxy(15,y);y++;
+	printf("Ingrese el mes:");
+	scanf("%d",&mes);
+	LimpiarPantalla();y=1;
+	gotoxy(35,y);y++;
+	printf("===========================================");
+	gotoxy(35,y);y++;
+	printf("RANKING DE TURNOS ATENDIDOS DE VETERINARIOS");
+	gotoxy(35,y);y++;y++;
+	printf("===========================================");
+	
+	
+	for(i=0;i<CantVeterinarios;i++)//Contar cantidad de turnos registrado por cada veterinario
+	{
+		VecCantTurnosVet[i]=0;
+		for(j=0;j<CantTurnos;j++)
+		{
+			if(VecTurnos[j].fecha.mes==mes && VecTurnos[j].MatriculaVeterinario==VecVeterinarios[i].matricula && strcmp(VecTurnos[j].DetalleAtencion,"")!=0)
+			{
+				VecCantTurnosVet[i]=VecCantTurnosVet[i]+1;
+			}
+		}
+	}
+	
+	do//Ordenar según la cantidad de pacientes atendidos
+	{
+		bandera=0;
+		for(i=0;i<CantVeterinarios-1;i++)
+		{
+			if(VecCantTurnosVet[i]<VecCantTurnosVet[i+1])
+			{
+				bandera=1;
+				Aux4=VecCantTurnosVet[i+1];
+				VecCantTurnosVet[i+1]=VecCantTurnosVet[i];
+				VecCantTurnosVet[i]=Aux4;
+				Aux3=VecVeterinarios[i+1];
+				VecVeterinarios[i+1]=VecVeterinarios[i];
+				VecVeterinarios[i]=Aux3;
+			}
+		}
+	}while(bandera==1);
+	
+	for(i=0;i<CantVeterinarios;i++)
+	{
+		gotoxy(15,y);y++;y++;
+		printf("Veterinario %s: %d turnos",VecVeterinarios[i].ApellidoNombre,VecCantTurnosVet[i]);
+	}
+	gotoxy(15,y);
+	printf("======================================================================");
 }
 
 void Listar_Asistentes(FILE *Usuario_Asistente)
